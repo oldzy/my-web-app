@@ -1,0 +1,41 @@
+<div class="home-container">
+  <h2>Product List</h2>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Loading products...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!isLoading && !error && products.length === 0" class="no-products-message">
+    <p>No products found.</p>
+  </div>
+
+  <table *ngIf="!isLoading && !error && products.length > 0" class="products-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Image</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let product of products">
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.description }}</td>
+        <td>{{ product.price | currency }}</td>
+        <td>{{ product.stock }}</td>
+        <td>
+          <img *ngIf="product.image" [src]="'data:image/jpeg;base64,' + product.image" alt="{{ product.name }}" width="50">
+          <span *ngIf="!product.image">No Image</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
