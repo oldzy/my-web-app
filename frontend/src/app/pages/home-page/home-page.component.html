@@ -16,17 +16,16 @@
   <table *ngIf="!isLoading && !error && products.length > 0" class="products-table">
     <thead>
       <tr>
-        <th>ID</th>
         <th>Name</th>
         <th>Description</th>
         <th>Price</th>
         <th>Stock</th>
         <th>Image</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let product of products">
-        <td>{{ product.id }}</td>
+      <tr *ngFor="let product of products" [class.out-of-stock]="product.stock === 0">
         <td>{{ product.name }}</td>
         <td>{{ product.description }}</td>
         <td>{{ product.price | currency }}</td>
@@ -34,6 +33,11 @@
         <td>
           <img *ngIf="product.image" [src]="'data:image/jpeg;base64,' + product.image" alt="{{ product.name }}" width="50">
           <span *ngIf="!product.image">No Image</span>
+        </td>
+        <td class="actions">
+          <button (click)="addToCart(product)" [disabled]="product.stock === 0" class="add-to-cart-button">
+            +
+          </button>
         </td>
       </tr>
     </tbody>

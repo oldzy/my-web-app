@@ -143,9 +143,9 @@ public static class UserRoutes
 
         group.MapDelete("me/cart/items", (ICartUseCases cartUseCases, HttpContext httpContext) =>
         {
-            var cart = GetCartByUserId(cartUseCases, httpContext).cart;
+            var userId = GetCartByUserId(cartUseCases, httpContext).userId;
 
-            cartUseCases.ClearCart(cart.Id);
+            cartUseCases.ClearCart(userId);
 
             return Results.Ok();
         })

@@ -1,3 +1,10 @@
+.container {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 1rem;
+  width: 100%;
+}
+
 .logout-button {
   background-color: #f44336;
   color: white;
@@ -6,10 +13,24 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-  float: right;
   margin-bottom: 10px;
 }
 
 .logout-button:hover {
   background-color: #d32f2f;
+}
+
+.cart-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.cart-button:hover {
+  background-color: #0056b3;
 }

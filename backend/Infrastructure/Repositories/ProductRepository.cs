@@ -34,4 +34,12 @@ public class ProductRepository(IConfiguration configuration) : IProductRepositor
         using var connection = CreateConnection();
         return connection.QuerySingleOrDefault<Product>(sql, new { Id = productId });
     }
+
+    public int GetTotalQuantityOfProductInAllCarts(Guid productId)
+    {
+        using var connection = CreateConnection();
+        const string sql = "SELECT SUM(Quantity) FROM CartItem WHERE ProductId = @ProductId";
+        var totalQuantity = connection.QueryFirstOrDefault<int?>(sql, new { ProductId = productId });
+        return totalQuantity ?? 0;
+    }
 }

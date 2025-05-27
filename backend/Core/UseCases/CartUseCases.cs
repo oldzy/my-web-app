@@ -51,20 +51,20 @@ public class CartUseCases : ICartUseCases
         _cartGateway.AddOrUpdateItemsToCart(cartId, items);        
     }
 
-    public void ClearCart(Guid cartId)
+    public void ClearCart(Guid userId)
     {
-        if (cartId == Guid.Empty)
+        if (userId == Guid.Empty)
         {
-            throw new ArgumentException("Cart ID cannot be empty.", nameof(cartId));
+            throw new ArgumentException("User ID cannot be empty.", nameof(userId));
         }
 
-        var cart = _cartGateway.GetCartByUserId(cartId);
+        var cart = _cartGateway.GetCartByUserId(userId);
         if (cart == null)
         {
             throw new KeyNotFoundException("Cart not found.");
         }
 
-        _cartGateway.ClearCart(cartId);
+        _cartGateway.ClearCart(cart.Id);
     }
 
     public Cart GetCartByUserId(Guid userId)

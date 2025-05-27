@@ -7,4 +7,5 @@ public interface IProductRepository
     IEnumerable<Product> GetAllProducts();
     Product? GetProductById(Guid productId);
     void AddProduct(Product product);
+    int GetTotalQuantityOfProductInAllCarts(Guid productId);
 }

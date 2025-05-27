@@ -38,7 +38,7 @@ public class CartGateway : ICartGateway
             }
             else
             {
-                cartItem.Quantity = item.Quantity;
+                cartItem.Quantity += item.Quantity;
                 cartItem.Price = item.Price;
 
                 itemsToUpdate.Add(cartItem);

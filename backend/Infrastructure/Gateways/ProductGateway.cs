@@ -32,7 +32,7 @@ public class ProductGateway : IProductGateway
                 Name = p.Name,
                 Description = p.Description,
                 Price = p.Price,
-                Stock = p.Stock,
+                Stock = (uint)(p.Stock - _productRepository.GetTotalQuantityOfProductInAllCarts(p.Id)),
                 Image = imageBase64
             });
         }
@@ -72,7 +72,7 @@ public class ProductGateway : IProductGateway
             Name = infraProduct.Name,
             Description = infraProduct.Description,
             Price = infraProduct.Price,
-            Stock = infraProduct.Stock,
+            Stock = (uint)(infraProduct.Stock - _productRepository.GetTotalQuantityOfProductInAllCarts(infraProduct.Id)),
             Image = imageBase64
         };
     }
