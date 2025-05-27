@@ -27,4 +27,11 @@ public class ProductRepository(IConfiguration configuration) : IProductRepositor
         using var connection = CreateConnection();
         connection.Execute(sql, product);
     }
+
+    public Product? GetProductById(Guid productId)
+    {
+        const string sql = "SELECT Id, Name, Description, Price, Stock, ImageUrl, CreatedAt, UpdatedAt FROM Product WHERE Id = @Id;";
+        using var connection = CreateConnection();
+        return connection.QuerySingleOrDefault<Product>(sql, new { Id = productId });
+    }
 }

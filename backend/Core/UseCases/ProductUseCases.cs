@@ -11,7 +11,7 @@ public class ProductUseCases : IProductUseCases
 
     public ProductUseCases(IProductGateway productGateway)
     {
-        _productGateway = productGateway;
+        _productGateway = productGateway ?? throw new ArgumentNullException(nameof(productGateway));
     }
 
     public IEnumerable<Product> GetAllProducts()

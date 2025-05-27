@@ -10,6 +10,23 @@ namespace Api.EndPoints;
 
 public static class UserRoutes
 {
+    private static (Cart cart, Guid userId) GetCartByUserId(ICartUseCases cartUseCases, HttpContext httpContext)
+    {
+        var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            throw new UnauthorizedAccessException("User is not authenticated.");
+        }
+
+        if (!Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            throw new ArgumentException("Invalid user identifier format in token.");
+        }
+
+        return (cartUseCases.GetCartByUserId(userId), userId);
+    }
+    
     public static WebApplication AddUserRoutes(this WebApplication app)
     {
         var group = app.MapGroup("api/users")
@@ -40,7 +57,8 @@ public static class UserRoutes
 
                 var claims = new List<Claim>
                 {
-                    new Claim(JwtRegisteredClaimNames.Name, request.Username),
+                    new Claim(JwtRegisteredClaimNames.Name, user.Username),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 };
 
                 if (user.IsAdmin)
@@ -87,7 +105,56 @@ public static class UserRoutes
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized)
         .Produces(StatusCodes.Status500InternalServerError);
-        
+
+        group.MapGet("me/cart", (ICartUseCases cartUseCases, HttpContext httpContext) =>
+        {
+            var cart = GetCartByUserId(cartUseCases, httpContext).cart;
+            return Results.Ok(cart);
+        })
+        .WithName("GetMyCart")
+        .Produces<Cart>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .Produces(StatusCodes.Status500InternalServerError);
+
+        group.MapPost("me/cart/items", ([FromBody] IEnumerable<Models.CartItem> items, ICartUseCases cartUseCases, HttpContext httpContext) =>
+        {
+            var res = GetCartByUserId(cartUseCases, httpContext);
+            var cart = res.cart;
+            var userId = res.userId;
+
+            cartUseCases.AddOrUpdateItemsToCart(cart.Id, items.Select(i => new CartItem
+            {
+                Product = new Product { Id = i.ProductId },
+                Quantity = i.Quantity,
+                UnitPrice = i.Price
+            }));
+
+            cart = cartUseCases.GetCartByUserId(userId);
+
+            return Results.Ok(cart);
+        })
+        .WithName("AddOrUpdateCartItems")
+        .Produces<Cart>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .Produces(StatusCodes.Status500InternalServerError);
+
+
+        group.MapDelete("me/cart/items", (ICartUseCases cartUseCases, HttpContext httpContext) =>
+        {
+            var cart = GetCartByUserId(cartUseCases, httpContext).cart;
+
+            cartUseCases.ClearCart(cart.Id);
+
+            return Results.Ok();
+        })
+        .WithName("ClearCart")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .Produces(StatusCodes.Status500InternalServerError);
+
         return app;
     }
 }

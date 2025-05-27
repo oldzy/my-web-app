@@ -13,8 +13,10 @@ public static class ServiceCollectionExtension
     {
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IProductRepository, ProductRepository>();
+        services.AddTransient<ICartRepository, CartRepository>();
         services.AddTransient<IUserGateway, UserGateway>();
         services.AddTransient<IProductGateway, ProductGateway>();
+        services.AddTransient<ICartGateway, CartGateway>();
 
         return services;
     }

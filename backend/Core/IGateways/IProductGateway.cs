@@ -6,4 +6,5 @@ public interface IProductGateway
 {
     IEnumerable<Product> GetAllProducts();
     void AddProduct(Product product);
+    Product? GetProductById(Guid productId);
 }

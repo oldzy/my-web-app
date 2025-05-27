@@ -28,6 +28,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         {
             KeyNotFoundException knfex => (HttpStatusCode.NotFound, knfex.Message),
             ArgumentException argex => (HttpStatusCode.BadRequest, argex.Message),
+            UnauthorizedAccessException uaex => (HttpStatusCode.Unauthorized, uaex.Message),
             _ => (HttpStatusCode.InternalServerError, "An internal server error has occurred. Please try again later.")
         };
 

@@ -10,7 +10,7 @@ public class UserUseCases : IUserUseCases
 
     public UserUseCases(IUserGateway userGateway)
     {
-        _userGateway = userGateway;
+        _userGateway = userGateway ?? throw new ArgumentNullException(nameof(userGateway));
     }
 
     public User AuthenticateAndGetUser(AuthenticationRequest request)

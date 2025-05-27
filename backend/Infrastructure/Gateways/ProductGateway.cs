@@ -1,11 +1,7 @@
 using Core.IGateways;
 using Infrastructure.Models;
 using Infrastructure.Repositories.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Infrastructure.Utils;
 
 namespace Infrastructure.Gateways;
 
@@ -15,32 +11,7 @@ public class ProductGateway : IProductGateway
 
     public ProductGateway(IProductRepository productRepository)
     {
-        _productRepository = productRepository;
-    }
-
-    private string? GetBase64ImageAsync(string? imageUrl)
-    {
-        using var httpClient = new HttpClient();
-
-        if (string.IsNullOrWhiteSpace(imageUrl))
-        {
-            return null;
-        }
-
-        try
-        {
-            var response = httpClient.GetAsync(imageUrl).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                var imageBytes = response.Content.ReadAsByteArrayAsync().Result;
-                return Convert.ToBase64String(imageBytes);
-            }            
-            return null;
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
     }
 
     public IEnumerable<Core.Models.Product> GetAllProducts()
@@ -53,7 +24,7 @@ public class ProductGateway : IProductGateway
             string? imageBase64 = null;
             if (!string.IsNullOrWhiteSpace(p.ImageUrl))
             {
-                imageBase64 = GetBase64ImageAsync(p.ImageUrl);
+                imageBase64 = Base64Utils.GetBase64Image(p.ImageUrl);
             }
             coreProducts.Add(new Core.Models.Product
             {
@@ -79,5 +50,30 @@ public class ProductGateway : IProductGateway
             ImageUrl = product.Image
         };
         _productRepository.AddProduct(infraProduct);
+    }
+
+    public Core.Models.Product? GetProductById(Guid productId)
+    {
+        var infraProduct = _productRepository.GetProductById(productId);
+        if (infraProduct == null)
+        {
+            return null;
+        }
+
+        string? imageBase64 = null;
+        if (!string.IsNullOrWhiteSpace(infraProduct.ImageUrl))
+        {
+            imageBase64 = Base64Utils.GetBase64Image(infraProduct.ImageUrl);
+        }
+
+        return new Core.Models.Product
+        {
+            Id = infraProduct.Id,
+            Name = infraProduct.Name,
+            Description = infraProduct.Description,
+            Price = infraProduct.Price,
+            Stock = infraProduct.Stock,
+            Image = imageBase64
+        };
     }
 }

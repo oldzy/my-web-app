@@ -10,7 +10,7 @@ public class UserGateway : IUserGateway
 
     public UserGateway(IUserRepository userRepository)
     {
-        _userRepository = userRepository;
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     }
 
     public void AddUser(string username, string passwordHash)

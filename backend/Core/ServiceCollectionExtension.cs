@@ -10,6 +10,7 @@ public static class ServiceCollectionExtension
     {
         services.AddTransient<IUserUseCases, UserUseCases>();
         services.AddTransient<IProductUseCases, ProductUseCases>();
+        services.AddTransient<ICartUseCases, CartUseCases>();
 
         return services;
     }
